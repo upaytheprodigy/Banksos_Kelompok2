@@ -19,7 +19,7 @@ class _KontribusikuScreenState extends State<KontribusikuScreen>
   late TabController _tabController;
 
   // --- Data dummy (nanti diganti dengan Riverpod provider + Hive) ---
-  final List<QuestionModel> _dummyQuestions = [
+  List<QuestionModel> _dummyQuestions = [
     QuestionModel(
       id: '1',
       questionText:
@@ -207,7 +207,13 @@ class _KontribusikuScreenState extends State<KontribusikuScreen>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => SubmitSoalScreen(),
+              builder: (_) => SubmitSoalScreen(
+                onSoalSaved: (newQuestion) {
+                  setState(() {
+                    _dummyQuestions.add(newQuestion);
+                  });
+                },
+              ),
             ),
           );
         },
@@ -358,7 +364,6 @@ class _SoalCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // TODO: navigate to detail / edit screen
           _showDetailBottomSheet(context);
         },
         child: Padding(
@@ -608,7 +613,6 @@ class _SoalCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // Handle bar
               Container(
                 margin: const EdgeInsets.only(top: 12, bottom: 8),
                 width: 40,
@@ -650,109 +654,3 @@ class _SoalCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isCorrect
                                 ? AppTheme.accentGreen.withOpacity(0.1)
-                                : AppTheme.surface,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: isCorrect
-                                  ? AppTheme.accentGreen
-                                  : AppTheme.divider,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color: isCorrect
-                                      ? AppTheme.accentGreen
-                                      : AppTheme.primaryLight,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    letter,
-                                    style: TextStyle(
-                                      color: isCorrect
-                                          ? Colors.white
-                                          : AppTheme.primaryDark,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  e.value,
-                                  style: GoogleFonts.nunito(fontSize: 14),
-                                ),
-                              ),
-                              if (isCorrect)
-                                const Icon(Icons.check_circle_rounded,
-                                    color: AppTheme.accentGreen, size: 18),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
-                    if (question.explanation.isNotEmpty) ...[
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryLight,
-                          borderRadius: BorderRadius.circular(12),
-                          border: const Border(
-                            left: BorderSide(
-                                color: AppTheme.primaryDark, width: 4),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.lightbulb_outline_rounded,
-                                    color: AppTheme.primaryDark, size: 16),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Pembahasan',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppTheme.primaryDark,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              question.explanation,
-                              style: GoogleFonts.nunito(
-                                fontSize: 13,
-                                color: AppTheme.textSecondary,
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: question.tags.map((t) => TagChip(tag: t)).toList(),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
