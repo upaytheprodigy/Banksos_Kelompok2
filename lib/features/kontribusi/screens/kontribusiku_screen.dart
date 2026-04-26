@@ -6,7 +6,6 @@ import 'package:banksos/features/kontribusi/widgets/status_chip.dart';
 import 'package:banksos/features/kontribusi/screens/submit_soal_screen.dart';
 
 /// UC-05 (dari Seruni): Layar Kontribusiku
-/// Menampilkan semua soal yang pernah disubmit oleh User, dikelompokkan per status.
 class KontribusikuScreen extends StatefulWidget {
   const KontribusikuScreen({super.key});
 
@@ -18,7 +17,6 @@ class _KontribusikuScreenState extends State<KontribusikuScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // --- Data dummy (nanti diganti dengan Riverpod provider + Hive) ---
   List<QuestionModel> _dummyQuestions = [
     QuestionModel(
       id: '1',
@@ -72,8 +70,7 @@ class _KontribusikuScreenState extends State<KontribusikuScreen>
     ),
     QuestionModel(
       id: '4',
-      questionText:
-          'Apa output dari kode Python berikut: print(type(3/2))?',
+      questionText: 'Apa output dari kode Python berikut: print(type(3/2))?',
       questionType: 'multipleChoice',
       options: ['<class \'int\'>', '<class \'float\'>', '<class \'str\'>', 'Error'],
       correctAnswer: '<class \'float\'>',
@@ -162,9 +159,7 @@ class _KontribusikuScreenState extends State<KontribusikuScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list_rounded, color: Colors.white),
-            onPressed: () {
-              // TODO: filter dialog
-            },
+            onPressed: () {},
           ),
         ],
         bottom: TabBar(
@@ -190,7 +185,8 @@ class _KontribusikuScreenState extends State<KontribusikuScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _SoalListView(questions: draftList, emptyMessage: 'Tidak ada soal draft'),
+          _SoalListView(
+              questions: draftList, emptyMessage: 'Tidak ada soal draft'),
           _SoalListView(
               questions: pendingList,
               emptyMessage: 'Tidak ada soal yang menunggu review'),
@@ -347,7 +343,8 @@ class _SoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasNote = question.revisionNote != null || question.rejectionNote != null;
+    final bool hasNote =
+        question.revisionNote != null || question.rejectionNote != null;
     final String? note = question.revisionNote ?? question.rejectionNote;
 
     return Card(
@@ -363,9 +360,7 @@ class _SoalCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          _showDetailBottomSheet(context);
-        },
+        onTap: () => _showDetailBottomSheet(context),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -435,7 +430,8 @@ class _SoalCard extends StatelessWidget {
                 runSpacing: 6,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: AppTheme.primaryDark.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(8),
@@ -513,9 +509,7 @@ class _SoalCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () {
-                          // TODO: edit soal
-                        },
+                        onPressed: () {},
                         icon: const Icon(Icons.edit_rounded, size: 16),
                         label: const Text('Edit'),
                         style: OutlinedButton.styleFrom(
@@ -527,9 +521,8 @@ class _SoalCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          _showSubmitConfirmDialog(context, question);
-                        },
+                        onPressed: () =>
+                            _showSubmitConfirmDialog(context, question),
                         icon: const Icon(Icons.send_rounded, size: 16),
                         label: Text(
                           question.status == 'NEEDS_REVISION'
@@ -556,10 +549,12 @@ class _SoalCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Ajukan untuk Review?',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 16),
+          style:
+              GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 16),
         ),
         content: Text(
           'Soal ini akan dikirim ke Reviewer jurusan ${question.departmentId}. '
@@ -654,3 +649,111 @@ class _SoalCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isCorrect
                                 ? AppTheme.accentGreen.withOpacity(0.1)
+                                : AppTheme.surface,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isCorrect
+                                  ? AppTheme.accentGreen
+                                  : AppTheme.divider,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  color: isCorrect
+                                      ? AppTheme.accentGreen
+                                      : AppTheme.primaryLight,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    letter,
+                                    style: TextStyle(
+                                      color: isCorrect
+                                          ? Colors.white
+                                          : AppTheme.primaryDark,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  e.value,
+                                  style: GoogleFonts.nunito(fontSize: 14),
+                                ),
+                              ),
+                              if (isCorrect)
+                                const Icon(Icons.check_circle_rounded,
+                                    color: AppTheme.accentGreen, size: 18),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                    if (question.explanation.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryLight,
+                          borderRadius: BorderRadius.circular(12),
+                          border: const Border(
+                            left: BorderSide(
+                                color: AppTheme.primaryDark, width: 4),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.lightbulb_outline_rounded,
+                                    color: AppTheme.primaryDark, size: 16),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Pembahasan',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppTheme.primaryDark,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              question.explanation,
+                              style: GoogleFonts.nunito(
+                                fontSize: 13,
+                                color: AppTheme.textSecondary,
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: question.tags
+                          .map((t) => TagChip(tag: t))
+                          .toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
