@@ -6,12 +6,21 @@ class DbService {
 
   static Future<Db> getDb() async {
     if (_db != null && _db!.isConnected) return _db!;
-    _db = await Db.create(dotenv.env['mongodb+srv://soalku_admin:KXmghCdEnVnwL170@soalku-cluster.u04nbqy.mongodb.net/?appName=soalku-cluster']!);
+    
+    final uri = dotenv.env['MONGO_URI'];
+    if (uri == null || uri.isEmpty) {
+      throw Exception('MONGO_URI tidak ditemukan di .env');
+    }
+
+    _db = await Db.create(uri);
     await _db!.open();
     return _db!;
   }
 
   static DbCollection getCollection(String name) {
+    if (_db == null || !_db!.isConnected) {
+      throw Exception('Database belum terhubung');
+    }
     return _db!.collection(name);
   }
 }

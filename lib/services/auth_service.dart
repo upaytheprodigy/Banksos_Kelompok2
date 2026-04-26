@@ -72,11 +72,16 @@ class AuthService {
   }
 
   static Future<List<DepartmentModel>> getDepartments() async {
+  try {
     await DbService.getDb();
     final col = DbService.getCollection(_deptCol);
-    final docs = await col.find({'isActive': true}).toList();
+    final docs = await col.find().toList();
+  print('Semua data tanpa filter: $docs');
     return docs.map((d) => DepartmentModel.fromMap(d)).toList();
+  } catch (e) {
+    return [];
   }
+}
 
   static void logout() {
     Hive.box('session').clear();
