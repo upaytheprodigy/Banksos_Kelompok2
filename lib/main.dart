@@ -1,25 +1,50 @@
+// lib/main.dart
+// UPDATE — tambahkan registrasi Hive adapter untuk feature/offlineSync
+//
+// Perubahan dari Adjie (feature/offlineSync):
+//   - Register 3 adapter baru: SyncOperationAdapter, SyncStatusAdapter,
+//     SyncQueueModelAdapter
+//   - Buka box 'sync_queue' sebelum app jalan
+//   - Ganti placeholder Profil dengan ProfilScreen
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'core/theme/app_theme.dart';
 import 'features/kontribusi/screens/kontribusiku_screen.dart';
+
+// [ADJIE] Import sync module
+import 'features/sync/models/sync_queue_model.dart';
+import 'features/sync/screens/profil_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock portrait orientation
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Init Hive (local database)
+  // Init Hive
   await Hive.initFlutter();
-  // TODO: register Hive adapters
-  // Hive.registerAdapter(QuestionModelAdapter());
 
-  // Status bar style
+  // [ADJIE] Register adapter untuk SyncQueue
+  // typeId harus unik — cek sync_queue_model.dart
+  if (!Hive.isAdapterRegistered(10)) {
+    Hive.registerAdapter(SyncOperationAdapter());
+  }
+  if (!Hive.isAdapterRegistered(11)) {
+    Hive.registerAdapter(SyncStatusAdapter());
+  }
+  if (!Hive.isAdapterRegistered(12)) {
+    Hive.registerAdapter(SyncQueueModelAdapter());
+  }
+
+  // [ADJIE] Buka box SyncQueue
+  await Hive.openBox<SyncQueueModel>('sync_queue');
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -48,7 +73,6 @@ class SoalKuApp extends StatelessWidget {
   }
 }
 
-/// Bottom nav shell — nanti setiap tab diisi dengan screen masing-masing anggota
 class MainNavShell extends StatefulWidget {
   const MainNavShell({super.key});
 
@@ -57,7 +81,7 @@ class MainNavShell extends StatefulWidget {
 }
 
 class _MainNavShellState extends State<MainNavShell> {
-  int _selectedIndex = 2; // default ke tab Kontribusiku (bagian Seruni)
+  int _selectedIndex = 2;
 
   final List<Widget> _screens = [
     const _PlaceholderScreen(
@@ -68,11 +92,9 @@ class _MainNavShellState extends State<MainNavShell> {
         label: 'Bank Soal',
         icon: Icons.library_books_rounded,
         description: 'Modul: Revaldi (Browse & Kerjakan Soal)'),
-    const KontribusikuScreen(), // <-- Bagian Seruni
-    const _PlaceholderScreen(
-        label: 'Profil',
-        icon: Icons.person_rounded,
-        description: 'Modul: Adjie (Sync & Auth)'),
+    const KontribusikuScreen(),
+    // [ADJIE] Ganti placeholder dengan ProfilScreen yang sudah jadi
+    const ProfilScreen(),
   ];
 
   @override
@@ -118,7 +140,6 @@ class _MainNavShellState extends State<MainNavShell> {
   }
 }
 
-/// Placeholder untuk modul anggota lain yang belum dikerjakan
 class _PlaceholderScreen extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -143,31 +164,26 @@ class _PlaceholderScreen extends StatelessWidget {
           children: [
             Icon(icon, size: 72, color: Colors.grey.shade300),
             const SizedBox(height: 16),
-            Text(
-              label,
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w700),
-            ),
+            Text(label,
+                style: const TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            Text(
-              description,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
-              textAlign: TextAlign.center,
-            ),
+            Text(description,
+                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                textAlign: TextAlign.center),
             const SizedBox(height: 24),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: AppTheme.primaryLight,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
-                'Under Development',
-                style: TextStyle(
-                    color: AppTheme.primaryDark,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12),
-              ),
+              child: const Text('Under Development',
+                  style: TextStyle(
+                      color: AppTheme.primaryDark,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12)),
             ),
           ],
         ),

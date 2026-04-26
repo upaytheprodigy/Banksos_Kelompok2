@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:soalku/features/kontribusi/models/question_model.dart';
-import 'package:soalku/core/theme/app_theme.dart';
+import 'package:banksos/features/kontribusi/models/question_model.dart';
+import 'package:banksos/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {

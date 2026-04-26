@@ -34,4 +34,6 @@ class QuestionModel {
     this.revisionNote,
     this.rejectionNote,
   });
+
+  copyWith({required String status}) {}
 }
