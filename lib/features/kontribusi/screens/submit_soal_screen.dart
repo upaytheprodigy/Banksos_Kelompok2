@@ -175,6 +175,8 @@ class _SubmitSoalScreenState extends State<SubmitSoalScreen> {
       difficulty: _difficulty,
       tags: autoTags,
       departmentId: _department,
+      matkulName: _matkul,   // ← BARU
+      topicName: _topik,     // ← BARU
       status: status,
       createdBy: 'user_seruni',
       updatedAt: DateTime.now(),

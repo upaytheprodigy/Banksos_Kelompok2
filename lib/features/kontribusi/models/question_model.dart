@@ -1,56 +1,37 @@
-import 'package:flutter/material.dart';
-
-enum QuestionStatus { draft, pendingReview, needsRevision, approved, rejected }
-
-extension QuestionStatusExt on QuestionStatus {
-  String get value {
-    switch (this) {
-      case QuestionStatus.draft: return 'DRAFT';
-      case QuestionStatus.pendingReview: return 'PENDING_REVIEW';
-      case QuestionStatus.needsRevision: return 'NEEDS_REVISION';
-      case QuestionStatus.approved: return 'APPROVED';
-      case QuestionStatus.rejected: return 'REJECTED';
-    }
-  }
-}
-
-enum QuestionType { multipleChoice, trueFalse, essay }
-enum DifficultyLevel { easy, medium, hard }
-
 class QuestionModel {
-  String id;
-  String questionText;
-  String questionType;
-  List<String> options;
-  String correctAnswer;
-  String explanation;
-  String difficulty;
-  List<String> tags;
-  String departmentId;
-  String status;
-  String? rejectionNote;
-  String? revisionNote;
-  String createdBy;
-  String? reviewedBy;
-  DateTime updatedAt;
-  String syncStatus;
+  final String id;
+  final String questionText;
+  final String questionType;
+  final List<String> options;
+  final String correctAnswer;
+  final String explanation;
+  final String difficulty;
+  final List<String> tags;
+  final String departmentId;
+  final String matkulName;  // ← BARU
+  final String topicName;   // ← BARU
+  final String status;
+  final String createdBy;
+  final DateTime updatedAt;
+  final String? revisionNote;
+  final String? rejectionNote;
 
-  QuestionModel({
+  const QuestionModel({
     required this.id,
     required this.questionText,
     required this.questionType,
     required this.options,
     required this.correctAnswer,
-    this.explanation = '',
+    required this.explanation,
     required this.difficulty,
     required this.tags,
     required this.departmentId,
-    this.status = 'DRAFT',
-    this.rejectionNote,
-    this.revisionNote,
+    this.matkulName = '',   // ← BARU
+    this.topicName = '',    // ← BARU
+    required this.status,
     required this.createdBy,
-    this.reviewedBy,
     required this.updatedAt,
-    this.syncStatus = 'PENDING',
+    this.revisionNote,
+    this.rejectionNote,
   });
 }
