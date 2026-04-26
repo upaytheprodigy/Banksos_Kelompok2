@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/theme/app_theme.dart';
 import 'features/kontribusi/screens/kontribusiku_screen.dart';
+import 'screens/auth/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock portrait orientation
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Init Hive (local database)
+  await dotenv.load(fileName: '.env');
   await Hive.initFlutter();
-  // TODO: register Hive adapters
-  // Hive.registerAdapter(QuestionModelAdapter());
+  await Hive.openBox('session');
 
-  // Status bar style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -39,16 +38,18 @@ class SoalKuApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final box = Hive.box('session');
+    final isLoggedIn = box.get('userId') != null;
+
     return MaterialApp(
       title: 'SoalKu',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const MainNavShell(),
+      home: isLoggedIn ? const MainNavShell() : const LoginScreen(),
     );
   }
 }
 
-/// Bottom nav shell — nanti setiap tab diisi dengan screen masing-masing anggota
 class MainNavShell extends StatefulWidget {
   const MainNavShell({super.key});
 
@@ -57,7 +58,7 @@ class MainNavShell extends StatefulWidget {
 }
 
 class _MainNavShellState extends State<MainNavShell> {
-  int _selectedIndex = 2; // default ke tab Kontribusiku (bagian Seruni)
+  int _selectedIndex = 2;
 
   final List<Widget> _screens = [
     const _PlaceholderScreen(
@@ -68,7 +69,7 @@ class _MainNavShellState extends State<MainNavShell> {
         label: 'Bank Soal',
         icon: Icons.library_books_rounded,
         description: 'Modul: Revaldi (Browse & Kerjakan Soal)'),
-    const KontribusikuScreen(), // <-- Bagian Seruni
+    const KontribusikuScreen(),
     const _PlaceholderScreen(
         label: 'Profil',
         icon: Icons.person_rounded,
@@ -118,7 +119,6 @@ class _MainNavShellState extends State<MainNavShell> {
   }
 }
 
-/// Placeholder untuk modul anggota lain yang belum dikerjakan
 class _PlaceholderScreen extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -145,8 +145,7 @@ class _PlaceholderScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               label,
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w700),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(
