@@ -5,9 +5,12 @@ import '../models/user_model.dart';
 import '../models/department_model.dart';
 import 'db_service.dart';
 
+typedef UserLookup = Future<Map<String, dynamic>?> Function(String email);
+
 class AuthService {
   static const _userCol = 'users';
   static const _deptCol = 'departments';
+  static UserLookup? debugFindUserByEmail;
 
   static Future<String?> register({
     required String name,
@@ -49,10 +52,7 @@ class AuthService {
   }
 
   static Future<UserModel?> login(String email, String password) async {
-    await DbService.getDb();
-    final col = DbService.getCollection(_userCol);
-
-    final doc = await col.findOne({'email': email});
+    final doc = await _findUserByEmail(email);
     if (doc == null) return null;
 
     final user = UserModel.fromMap(doc);
@@ -71,6 +71,20 @@ class AuthService {
     return user;
   }
 
+  static Future<Map<String, dynamic>?> _findUserByEmail(String email) async {
+    if (debugFindUserByEmail != null) {
+      return debugFindUserByEmail!(email);
+    }
+
+    await DbService.getDb();
+    final col = DbService.getCollection(_userCol);
+    return col.findOne({'email': email});
+  }
+
+  static void resetDebugOverrides() {
+    debugFindUserByEmail = null;
+  }
+
   static Future<List<DepartmentModel>> getDepartments() async {
   try {
     await DbService.getDb();
@@ -83,7 +97,7 @@ class AuthService {
   }
 }
 
-  static void logout() {
-    Hive.box('session').clear();
+  static Future<void> logout() async {
+    await Hive.box('session').clear();
   }
 }

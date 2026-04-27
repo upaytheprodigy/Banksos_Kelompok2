@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 60),
               const Icon(Icons.menu_book_rounded, size: 64, color: Color(0xFF1A237E)),
               const SizedBox(height: 12),
-              const Text('SoalKu',
+              const Text('Banksos',
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1A237E))),
               const SizedBox(height: 8),
               const Text('Belajar Lebih Cerdas, Kapanpun & Dimanapun',

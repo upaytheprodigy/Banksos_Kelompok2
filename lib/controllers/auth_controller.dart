@@ -15,7 +15,7 @@ class AuthController {
       nim: '',
       email: '',
       passwordHash: '',
-      role: box.get('userRole') ?? 'USER',
+      role: box.get('userRole') ?? 'User',
       departmentId: box.get('departmentId') ?? '',
       isActive: true,
       isSuspended: false,
@@ -27,12 +27,12 @@ class AuthController {
   static bool isLoggedIn() => Hive.box('session').get('userId') != null;
 
   static bool canReview() =>
-      ['REVIEWER', 'DEPT_ADMIN', 'SUPER_ADMIN'].contains(currentUser?.role);
+      ['Reviewer', 'Dept_Admin', 'Super_Admin'].contains(currentUser?.role);
 
   static bool canManageDepartment() =>
-      ['DEPT_ADMIN', 'SUPER_ADMIN'].contains(currentUser?.role);
+      ['Dept_Admin', 'Super_Admin'].contains(currentUser?.role);
 
-  static bool isSuperAdmin() => currentUser?.role == 'SUPER_ADMIN';
+  static bool isSuperAdmin() => currentUser?.role == 'Super_Admin';
 
   static bool canAccessDepartment(String departmentId) {
     if (isSuperAdmin()) return true;

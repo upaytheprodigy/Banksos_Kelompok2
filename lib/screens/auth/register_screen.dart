@@ -95,8 +95,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               )),
             const SizedBox(height: 12),
             TextField(controller: _confirmCtrl,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Konfirmasi Password', border: OutlineInputBorder())),
+              obscureText: _obscure,
+              decoration: InputDecoration(
+                labelText: 'Konfirmasi Password', 
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _obscure = !_obscure),
+                ),
+              )),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(labelText: 'Pilih Jurusan', border: OutlineInputBorder()),
